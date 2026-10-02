@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Matematikai kompetenciák fejlesztése 2. – Önellenőrző feladatlap</title>
+<style>
+:root{--bg:#f6f4ef;--card:#fff;--ink:#222;--mut:#666;--acc:#2f5d62;--accsoft:#e3eeee;--ok:#2e7d32;--oksoft:#e6f4e7;--bad:#b3261e;--badsoft:#fbe9e7;--line:#ddd8cc;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171a1a;--card:#222727;--ink:#eceae4;--mut:#a0a8a6;--acc:#7fc1c7;--accsoft:#2a3a3b;--ok:#7fd18a;--oksoft:#1f3322;--bad:#ff8a80;--badsoft:#3b2422;--line:#3a4141}}
+:root[data-theme="dark"]{--bg:#171a1a;--card:#222727;--ink:#eceae4;--mut:#a0a8a6;--acc:#7fc1c7;--accsoft:#2a3a3b;--ok:#7fd18a;--oksoft:#1f3322;--bad:#ff8a80;--badsoft:#3b2422;--line:#3a4141}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Georgia,"Times New Roman",serif}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.5rem;line-height:1.25;margin:.2em 0 .3em;color:var(--acc)}
+.sub{color:var(--mut);margin:0 0 16px;font-family:system-ui,sans-serif;font-size:.92rem}
+.intro{background:var(--accsoft);border-radius:10px;padding:12px 14px;font-family:system-ui,sans-serif;font-size:.92rem;margin-bottom:16px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);padding:8px 0;z-index:5;font-family:system-ui,sans-serif;font-size:.85rem;color:var(--mut)}
+.bar div.t{height:6px;background:var(--line);border-radius:3px;margin-top:4px;overflow:hidden}
+.bar div.f{height:100%;width:0;background:var(--acc);transition:width .3s}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:12px 0}
+.q.ok{border-color:var(--ok);background:var(--oksoft)}.q.bad{border-color:var(--bad);background:var(--badsoft)}
+.meta{font-family:system-ui,sans-serif;font-size:.75rem;color:var(--mut);display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.tag{background:var(--accsoft);color:var(--acc);border-radius:999px;padding:1px 9px}
+.qt{margin:.2em 0 .6em}
+input[type=text]{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:min(260px,60%)}
+.unit{font-family:system-ui,sans-serif;color:var(--mut);margin-left:6px}
+.tf{display:flex;gap:10px}
+.tf label{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;cursor:pointer;font-family:system-ui,sans-serif;background:var(--card)}
+.tf input{position:absolute;opacity:0}
+.tf label.sel{background:var(--accsoft);border-color:var(--acc);font-weight:600}
+.fb{display:none;margin-top:10px;font-family:system-ui,sans-serif;font-size:.9rem;border-top:1px dashed var(--line);padding-top:8px}
+.show .fb{display:block}
+.fb b.ok{color:var(--ok)}.fb b.bad{color:var(--bad)}
+button{font:600 1rem system-ui,sans-serif;background:var(--acc);color:var(--bg);border:0;border-radius:10px;padding:12px 22px;cursor:pointer}
+button.sec{background:var(--accsoft);color:var(--acc)}
+.res{background:var(--card);border:2px solid var(--acc);border-radius:12px;padding:16px;margin:14px 0;font-family:system-ui,sans-serif;display:none}
+.res .big{font-size:1.8rem;font-weight:700;color:var(--acc)}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Matematikai kompetenciák fejlesztése 2.<br>Önellenőrző feladatlap</h1>
+<p class="sub">Geometriai fogalmak és feladatok – tanítószakos hallgatóknak</p>
+<div class="intro">A kérdések minden megnyitáskor véletlen sorrendben jelennek meg. A feladatok kitöltése után a <b>Beküldés</b> gombra kattintva azonnal megjelenik a pontszám, a helyes válaszok és a magyarázatok. Számolásnál tizedesvessző és tizedespont is elfogadott; π értéke 3,14. Az „Újrakezdés” gombbal a feladatlap új sorrendben újra kitölthető.</div>
+<div class="bar"><span id="prog">0 / 0 megválaszolva</span><div class="t"><div class="f" id="pf"></div></div></div>
+<div id="qs"></div>
+<div class="acts" id="acts"><button id="sub">Beküldés</button></div>
+<div class="res" id="res"></div>
+<div class="acts"><button class="sec" id="re" style="display:none">Újrakezdés (új sorrend)</button></div>
+</div>
+<script>
+// f: kitöltős [topic,text,[elfogadott],megjelenített,magyarázat]; t: igaz-hamis [topic,text,bool,magyarázat]; c: számolós [topic,text,érték,tolerancia,mértékegység,magyarázat]
+const Q=[
+['f','Alapfogalmak','Két különböző ponton ___ egyenes halad át. (Írja be: hány?)',['1','egy','pontosan egy'],'pontosan egy','Két különböző pont egyértelműen meghatároz egy egyenest.'],
+['f','Szögek','A 90°-nál kisebb szöget ___ szögnek nevezzük.',['hegyes','hegyesszög'],'hegyes','Hegyesszög: 0° < α < 90°.'],
+['f','Szögek','A 90° és 180° közé eső szög neve: ___ szög.',['tompa','tompaszög'],'tompa','Tompaszög: 90° < α < 180°.'],
+['f','Szögpárok','Két szög ___ szögek, ha összegük 180°.',['kiegészítő','kiegészítő szögek','kiegeszito'],'kiegészítő','Kiegészítő szögek összege 180°, pótszögeké 90°.'],
+['f','Szögpárok','Két egyenes metszésekor keletkező csúcsszögek ___ egymással.',['egyenlők','egyenlő','egyforma','egyenlőek'],'egyenlők','A csúcsszögek mindig egyenlő nagyságúak.'],
+['f','Négyszögek','Az a négyszög, amelynek legalább egy párhuzamos oldalpárja van: ___.',['trapéz'],'trapéz','Trapéz: legalább egy pár párhuzamos oldal.'],
+['f','Négyszögek','A deltoid átlói ___ egymásra.',['merőlegesek','merőleges','merőlegesek egymásra'],'merőlegesek','A deltoid átlói merőlegesek, de nem feltétlenül felezik egymást.'],
+['f','Testek','A négyzet alapú gúlának összesen ___ lapja van.',['5','öt'],'5','1 alaplap + 4 oldallap.'],
+['f','Testek','A kúp palástja kiterítve ___ alakú.',['körcikk','körcikk alakú'],'körcikk','A kúp palástja körcikk.'],
+['f','Mértékegységek','1 dm³ = ___ liter.',['1','egy'],'1','1 dm³ = 1 l.'],
+['t','Háromszögek','Egy háromszögnek lehet két derékszöge.',false,'A belső szögek összege 180°, így két derékszög már 180° lenne.'],
+['t','Négyszögek','Minden négyzet rombusz.',true,'A négyzet minden oldala egyenlő, tehát rombusz (speciális).'],
+['t','Négyszögek','Minden trapéz paralelogramma.',false,'Fordítva igaz: minden paralelogramma trapéz (két párhuzamos oldalpárja van).'],
+['t','Négyszögek','A paralelogramma átlói felezik egymást.',true,'Ez a paralelogramma jellemző tulajdonsága.'],
+['t','Négyszögek','A téglalap átlói merőlegesek egymásra.',false,'A téglalap átlói egyenlő hosszúak és felezik egymást, de általában nem merőlegesek (csak négyzetnél).'],
+['t','Szögpárok','A mellékszögek összege 90°.',false,'A mellékszögek összege 180°.'],
+['t','Sokszögek','Az n oldalú konvex sokszög belső szögeinek összege (n−2)·180°.',true,'A sokszöget (n−2) háromszögre bonthatjuk egy csúcsból húzott átlókkal.'],
+['t','Körök','A kör leghosszabb húrja az átmérő.',true,'Az átmérő a középponton átmenő húr, hossza 2r.'],
+['t','Testek','A hasáb két alaplapja párhuzamos és egybevágó sokszög.',true,'Ez a hasáb definíciójának része.'],
+['c','Síkidomok','Egy téglalap oldalai 8 cm és 5 cm. Mekkora a kerülete?',26,0.01,'cm','K = 2·(8+5) = 26 cm.'],
+['c','Síkidomok','Egy téglalap oldalai 8 cm és 5 cm. Mekkora a területe?',40,0.01,'cm²','T = 8·5 = 40 cm².'],
+['c','Háromszögek','Egy háromszög egyik oldala 12 cm, az ehhez tartozó magasság 7 cm. Mekkora a területe?',42,0.01,'cm²','T = 12·7/2 = 42 cm².'],
+['c','Háromszögek','Egy háromszög két szöge 48° és 67°. Mekkora a harmadik szöge?',65,0.01,'°','180° − 48° − 67° = 65°.'],
+['c','Négyszögek','Egy trapéz párhuzamos oldalai 10 cm és 6 cm, magassága 4 cm. Mekkora a területe?',32,0.01,'cm²','T = (10+6)/2 · 4 = 32 cm².'],
+['c','Négyszögek','Egy rombusz átlói 10 cm és 6 cm. Mekkora a területe?',30,0.01,'cm²','T = e·f/2 = 10·6/2 = 30 cm².'],
+['c','Négyszögek','Egy paralelogramma egyik szöge 65°. Mekkora a szomszédos szöge?',115,0.01,'°','A szomszédos szögek kiegészítők: 180° − 65° = 115°.'],
+['c','Sokszögek','Hány átlója van egy konvex hatszögnek?',9,0.01,'db','n(n−3)/2 = 6·3/2 = 9.'],
+['c','Sokszögek','Mekkora a belső szögeinek összege egy konvex nyolcszögnek?',1080,0.01,'°','(8−2)·180° = 1080°.'],
+['c','Körök','Egy kör sugara 5 cm. Mekkora a kerülete? (π ≈ 3,14; egy tizedesre kerekítve)',31.4,0.15,'cm','K = 2·π·r = 2·3,14·5 = 31,4 cm.'],
+['c','Körök','Egy kör sugara 6 cm. Mekkora a területe? (π ≈ 3,14; egy tizedesre kerekítve)',113.04,0.1,'cm²','T = π·r² = 3,14·36 = 113,04 cm².'],
+['c','Testek','Egy kocka éle 4 cm. Mekkora a felszíne?',96,0.01,'cm²','A = 6·a² = 6·16 = 96 cm².'],
+['c','Testek','Egy téglatest élei 5 cm, 3 cm és 2 cm. Mekkora a térfogata?',30,0.01,'cm³','V = 5·3·2 = 30 cm³.'],
+['c','Mértékegységek','Hány cm² egy 1 m²?',10000,0.01,'cm²','1 m = 100 cm, így 1 m² = 100·100 = 10 000 cm².'],
+['c','Szöveges feladat','Egy 6 m × 4 m-es szoba padlóját 50 cm oldalú négyzet alakú járólapokkal burkolják. Hány lapra van szükség (vágás és veszteség nélkül)?',96,0.01,'db','A padló 24 m², egy lap 0,5·0,5 = 0,25 m². 24 : 0,25 = 96 db.'],
+['c','Szöveges feladat','Egy 12 m × 8 m-es téglalap alakú kertet körbekerítenek. A kerítés 1 méterének ára 1500 Ft. Mennyibe kerül a teljes kerítés?',60000,0.01,'Ft','Kerület: 2·(12+8) = 40 m; 40·1500 = 60 000 Ft.'],
+['c','Szöveges feladat','Egy akvárium belső méretei 50 cm × 30 cm × 40 cm. Hány liter víz fér bele, ha színültig töltjük?',60,0.01,'liter','V = 50·30·40 = 60 000 cm³ = 60 dm³ = 60 liter.'],
+['c','Szöveges feladat','Egy kerek pizza átmérője 30 cm. Mekkora a területe? (π ≈ 3,14; egy tizedesre kerekítve)',706.5,0.5,'cm²','r = 15 cm; T = 3,14·15² = 706,5 cm².'],
+['c','Szöveges feladat','Egy 10 cm élű kocka alakú dobozt teljesen beborítunk csomagolópapírral (átfedés nélkül). Hány cm² papír kell?',600,0.01,'cm²','A = 6·10² = 600 cm².'],
+['f','Síkgeometria elmélet','Két egyenest, amelyek egy síkban vannak és nincs közös pontjuk, ___ egyeneseknek nevezünk.',['párhuzamos','párhuzamosak','párhuzamos egyenesek'],'párhuzamos','Egy síkban lévő, metszéspont nélküli egyenesek párhuzamosak.'],
+['f','Síkgeometria elmélet','Két párhuzamos egyenest egy harmadik egyenes metsz. A keletkező váltószögek ___.',['egyenlők','egyenlő','egyenlőek','egyforma'],'egyenlők','Párhuzamos egyenesek esetén a váltószögek és az egyállású szögek egyenlők.'],
+['f','Síkgeometria elmélet','A háromszög oldalfelező merőlegeseinek metszéspontja a ___ középpontja.',['köréírt kör','köréírt','körülírt kör','körülírt','köréírt körének'],'köréírt kör','A metszéspont mindhárom csúcstól egyenlő távolságra van.'],
+['f','Síkgeometria elmélet','A háromszög súlypontja a súlyvonalat a csúcstól számítva ___ : 1 arányban osztja. (Írja be a hiányzó számot.)',['2','kettő'],'2','A súlypont a csúcstól számítva a súlyvonal kétharmadánál van, vagyis 2 : 1 arányban osztja.'],
+['t','Síkgeometria elmélet','Bármely háromszögben két oldal hosszának összege nagyobb a harmadik oldal hosszánál.',true,'Ez a háromszög-egyenlőtlenség.'],
+['t','Síkgeometria elmélet','A háromszög egy külső szöge egyenlő a nem mellette fekvő két belső szög összegével.',true,'A külső szög + a mellette lévő belső szög = 180°, és a három belső szög összege is 180°.'],
+['t','Síkgeometria elmélet','A derékszögű háromszög köré írt körének középpontja az átfogó felezőpontja.',true,'Ez Thalész tételének következménye.'],
+['t','Síkgeometria elmélet','A háromszög három magasságvonala mindig a háromszög belsejében metszi egymást.',false,'Tompaszögű háromszögnél a magasságpont a háromszögön kívül van, derékszögűnél a derékszögű csúcs.'],
+['f','Egybevágóság, hasonlóság','Az egybevágósági transzformációk: tengelyes tükrözés, középpontos tükrözés, eltolás és ___.',['elforgatás','forgatás','forgatás ','elforgatás '],'elforgatás','Ezek a távolságtartó (síkbeli) transzformációk.'],
+['c','Térképes feladat','Két település távolsága a térképen 7,2 cm. A térkép méretaránya 1 : 50 000. Hány kilométer a két település valódi távolsága?',3.6,0.01,'km','A valódi távolság 7,2·50 000 = 360 000 cm = 3 600 m = 3,6 km.'],
+['t','Egybevágóság, hasonlóság','Két háromszög egybevágó, ha három szögük páronként egyenlő.',false,'A páronként egyenlő szögek csak a hasonlóságot biztosítják; egybevágósághoz oldalra is szükség van.'],
+['t','Egybevágóság, hasonlóság','Két hasonló síkidom kerületének aránya megegyezik a hasonlóság arányával.',true,'A hosszúságok aránya λ, így a kerületeké is λ (a területeké λ²).']
+];
+const TY={f:'Kitöltős',t:'Igaz–hamis',c:'Számolás'};
+let order=[],done=false;
+const $=id=>document.getElementById(id);
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function norm(s){return s.toLowerCase().trim().replace(/\s+/g,' ').replace(/[.!]$/,'')}
+function num(s){const v=parseFloat(String(s).replace(/\s/g,'').replace(',','.'));return isNaN(v)?null:v}
+function fmt(n){return String(n).replace('.',',')}
+function build(){
+  done=false;order=shuffle(Q.map((_,i)=>i));
+  const box=$('qs');box.innerHTML='';
+  order.forEach((qi,k)=>{
+    const q=Q[qi],d=document.createElement('div');d.className='q';d.id='q'+k;
+    const ty=q[0],text=ty==='t'?q[2]:q[2];
+    let h='<div class="meta"><span><b>'+(k+1)+'.</b></span></div><p class="qt"></p>';
+    if(ty==='t')h+='<div class="tf"><label><input type="radio" name="r'+k+'" value="1">Igaz</label><label><input type="radio" name="r'+k+'" value="0">Hamis</label></div>';
+    else h+='<input type="text" id="i'+k+'" autocomplete="off" placeholder="'+(ty==='c'?'Szám':'Válasz')+'">'+(ty==='c'?'<span class="unit">'+q[5]+'</span>':'');
+    h+='<div class="fb"></div>';d.innerHTML=h;
+    d.querySelector('.qt').textContent=ty==='t'?q[2]:q[2];
+    box.appendChild(d);
+  });
+  document.querySelectorAll('.tf input').forEach(r=>r.addEventListener('change',e=>{
+    e.target.closest('.tf').querySelectorAll('label').forEach(l=>l.classList.remove('sel'));e.target.parentElement.classList.add('sel');prog()}));
+  document.querySelectorAll('input[type=text]').forEach(i=>i.addEventListener('input',prog));
+  $('res').style.display='none';$('re').style.display='none';$('acts').style.display='flex';prog();window.scrollTo(0,0);
+}
+function answered(k){const q=Q[order[k]];return q[0]==='t'?!!document.querySelector('input[name=r'+k+']:checked'):$('i'+k).value.trim()!==''}
+function prog(){let n=0;order.forEach((_,k)=>{if(answered(k))n++});$('prog').textContent=n+' / '+order.length+' megválaszolva';$('pf').style.width=(100*n/order.length)+'%'}
+function submit(){
+  const miss=order.filter((_,k)=>!answered(k)).length;
+  if(miss&&!confirm(miss+' kérdésre még nem érkezett válasz. Mégis beküldi?'))return;
+  done=true;let score=0;const by={};
+  order.forEach((qi,k)=>{
+    const q=Q[qi],d=$('q'+k),fb=d.querySelector('.fb');let ok=false,shown;
+    if(q[0]==='t'){const r=document.querySelector('input[name=r'+k+']:checked');ok=!!r&&((r.value==='1')===q[3]);shown=q[3]?'Igaz':'Hamis';document.querySelectorAll('input[name=r'+k+']').forEach(x=>x.disabled=true);fb.innerHTML='';fb.append(...mk(ok,'Helyes válasz: '+shown,q[4]))}
+    else{const inp=$('i'+k);inp.disabled=true;
+      if(q[0]==='f'){ok=q[3].map(norm).includes(norm(inp.value));shown=q[4];fb.append(...mk(ok,'Helyes válasz: '+shown,q[5]))}
+      else{const v=num(inp.value);ok=v!==null&&Math.abs(v-q[3])<=q[4];fb.append(...mk(ok,'Helyes válasz: '+fmt(q[3])+' '+q[5],q[6]))}}
+    d.classList.add(ok?'ok':'bad','show');if(ok)score++;
+    by[q[1]]=by[q[1]]||[0,0];by[q[1]][1]++;if(ok)by[q[1]][0]++;
+  });
+  const p=Math.round(100*score/order.length);
+  const r=$('res');r.style.display='block';
+  r.innerHTML='<div class="big">'+score+' / '+order.length+' pont ('+p+'%)</div><p>'+(p>=85?'Kiváló! Szinte minden fogalom a helyén van.':p>=60?'Jó eredmény! Érdemes átnézni a pirossal jelölt kérdések magyarázatát.':'Érdemes átismételni a pirossal jelölt témákat, majd újra megpróbálni.')+'</p><p><b>Témakörönként:</b> '+Object.entries(by).map(([t,v])=>t+': '+v[0]+'/'+v[1]).join(' · ')+'</p>';
+  $('acts').style.display='none';$('re').style.display='inline-block';
+  r.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function mk(ok,line,exp){
+  const a=document.createElement('div');a.innerHTML='<b class="'+(ok?'ok':'bad')+'">'+(ok?'✔ Helyes!':'✘ Nem helyes.')+'</b> ';
+  a.append(line+'. ');const b=document.createElement('span');b.textContent=exp;a.append(b);return [a];
+}
+$('sub').addEventListener('click',submit);$('re').addEventListener('click',build);
+build();
+</script>
+</body>
+</html>
